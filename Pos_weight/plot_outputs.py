@@ -2,15 +2,19 @@
 
 Run from the project root:
     python Pos_weight/plot_outputs.py
-Saves one image per level and POS_WEIGHT in Artifacts/Pos_Weight/.
+Plots every results file in each run folder (Pos_weight/data/<run>/) and
+saves the images in Artifacts/Pos_Weight/<run>/.
 """
+import glob
+import os
+
 import numpy as np
 import matplotlib.pyplot as plt
 
 FS = 25000                      # samples per second
 SPLIT = 1_000_000               # where validation starts in D1_train
-LEVELS = (1, 2, 3)
-POS_WEIGHTS = (10, 25, 65, 100, 300)
+RUNS = ("10-300", "1-20")       # run folders inside Pos_weight/data/
+DATA_DIR = "Pos_weight/data"
 OUT_DIR = "Artifacts/Pos_Weight"
 
 SIGNAL = "#2a78d6"   # blue
@@ -19,10 +23,12 @@ CLEAN = "#333333"    # dark grey
 SPIKE = "#bbbbbb"    # light grey
 
 
-def show_output(level, pw, epoch=100, x=2000):
-    """Top: noisy validation signal (with clean D1 over it).
+def show_output(path, epoch=100, x=2000):
+    """path: one results .npz file.
+    Top: noisy validation signal (with clean D1 over it).
     Bottom: detector output at the chosen epoch. Grey lines = real spikes."""
-    r = np.load(f"Pos_weight/data/level{level}_pw{pw}.npz")
+    r = np.load(path)
+    level, pw = int(r["level"]), int(r["pos_weight"])
     row = list(r["epochs"]).index(epoch)
     noisy = r["val_d"][:x]
     out = r["outputs"][row, :x].astype(np.float32)
@@ -57,8 +63,11 @@ def show_output(level, pw, epoch=100, x=2000):
 
 
 if __name__ == "__main__":
-    for level in LEVELS:
-        for pw in POS_WEIGHTS:
-            fig = show_output(level, pw)
-            fig.savefig(f"{OUT_DIR}/Output_L{level}_PW{pw}.png", dpi=120)
+    for run in RUNS:
+        os.makedirs(f"{OUT_DIR}/{run}", exist_ok=True)
+        for path in sorted(glob.glob(f"{DATA_DIR}/{run}/*.npz")):
+            fig = show_output(path)
+            r = np.load(path)
+            name = f"Output_L{int(r['level'])}_PW{int(r['pos_weight'])}.png"
+            fig.savefig(f"{OUT_DIR}/{run}/{name}", dpi=120)
             plt.close(fig)

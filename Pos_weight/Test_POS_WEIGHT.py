@@ -1,6 +1,6 @@
 """Spike detector experiment: how do POS_WEIGHT and noise level affect detection?
 
-For each noise level, one detector is trained per POS_WEIGHT. Every 10th epoch
+For each noise level, one detector is trained per POS_WEIGHT. At the last epoch
 each detector is run over every window of the validation signal, and the raw
 output vector (0 to 1 per window) is saved. Turning those vectors into spike
 guesses and F-scores is done later, in a separate script.
@@ -24,14 +24,14 @@ WIDTH = 50                            # samples per window (2 ms)
 STEP = 1                              # a window starts at every sample
 TOLERANCE = 4                         # window is a spike if it starts within ±4 of an Index
 HIDDEN = [50, 25]                     # hidden layer sizes
-POS_WEIGHTS = [10, 25, 65, 100, 300]
+POS_WEIGHTS = [1, 2, 5, 10, 20]
 EPOCHS = 100
 BATCH = 256
 LR = 0.001
-SAVE_EVERY = 10                       # save validation outputs every 10th epoch
+SAVE_EVERY = EPOCHS                 # only save validation outputs at the last epoch
 SPLIT = 1_000_000                     # train = D1_train[:SPLIT], validation = the rest
 SEED = 0
-OUT_DIR = "Pos_weight/data"
+OUT_DIR = "Pos_weight/data/1-20"
 
 
 def make_labels(index, n_windows):
