@@ -1,4 +1,4 @@
 __pycache__/
 *.kate-swp
 CLAUDE.md
-Results/pos_weight/
+Pos_weight/data/

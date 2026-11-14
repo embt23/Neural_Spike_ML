@@ -6,7 +6,7 @@ output vector (0 to 1 per window) is saved. Turning those vectors into spike
 guesses and F-scores is done later, in a separate script.
 
 Run from the project root, choosing the levels (default 1 2 3):
-    python Test_POS_WEIGHT.py 1 2 3
+    python Pos_weight/Test_POS_WEIGHT.py 1 2 3
 """
 import os
 import sys
@@ -31,7 +31,7 @@ LR = 0.001
 SAVE_EVERY = 10                       # save validation outputs every 10th epoch
 SPLIT = 1_000_000                     # train = D1_train[:SPLIT], validation = the rest
 SEED = 0
-OUT_DIR = "Results/pos_weight"
+OUT_DIR = "Pos_weight/data"
 
 
 def make_labels(index, n_windows):
