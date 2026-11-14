@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.io import loadmat
 
 FS = 25000  # sampling frequency in Hz
 
@@ -77,6 +78,21 @@ def save_class_examples(n=20, out_dir="Artifacts/Spikes{based on class}",
         print(f"Class {c}: saved {len(picks)} images to {folder}")
 
 
+def show_datasets(x=1000):
+    """Plot the first x samples of D1 to D6, stacked, on shared axes."""
+    t_ms = np.arange(x) / FS * 1000  # sample number -> ms
+
+    fig, axes = plt.subplots(6, 1, sharex=True, sharey=True, figsize=(10, 10))
+    for n, ax in enumerate(axes, start=1):
+        d_n = loadmat(f"Data/D{n}.mat")["d"].ravel()  # (1, N) -> (N,)
+        ax.plot(t_ms, d_n[:x], linewidth=0.8)
+        ax.set_ylabel(f"D{n}")
+
+    axes[-1].set_xlabel("Time (ms)")
+    fig.suptitle(f"First {x:,} samples of each dataset")
+    fig.tight_layout()
+
+
 if __name__ == "__main__":
     save_class_examples()
 
@@ -84,5 +100,7 @@ if __name__ == "__main__":
 
     for i in range(10):
         show_spike(i)
+
+    show_datasets(1000)
 
     plt.show()  # opens every figure at once
