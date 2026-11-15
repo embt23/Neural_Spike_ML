@@ -2,3 +2,4 @@ __pycache__/
 *.kate-swp
 CLAUDE.md
 Pos_weight/data/
+Big_model/data/
