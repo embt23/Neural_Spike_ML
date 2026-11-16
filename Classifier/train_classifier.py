@@ -9,8 +9,8 @@ the full grader (V0/grading.py, F_total = 0.3 F_detect + 0.7 F_class):
 detections it calls "fail" are dropped, the rest keep the predicted class.
 The best-scoring epoch is saved.
 
-Run from the project root (levels optional, default 4 5 6):
-    python Classifier/train_classifier.py 4 5 6
+Run from the project root (levels optional, default 2 3 4 5 6):
+    python Classifier/train_classifier.py 2 3 4 5 6
 
 Saves Classifier/level<L>.pt (best epoch) and Classifier/data/log_level<L>.jsonl.
 """
@@ -100,7 +100,7 @@ def train_level(level, true_index, true_class):
 
 
 def main():
-    levels = [int(a) for a in sys.argv[1:]] or [4, 5, 6]
+    levels = [int(a) for a in sys.argv[1:]] or [2, 3, 4, 5, 6]
     d1 = np.load("Data/D1_train.npz")
     val = d1["Index"] >= SPLIT
     true_index, true_class = d1["Index"][val] - SPLIT, d1["Class"][val]

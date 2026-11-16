@@ -12,8 +12,8 @@ detected point to 70 after it (80 samples).
 Training signals use the detector's training part (D1_train[:SPLIT]),
 validation signals the rest. Missed spikes don't appear (nothing to classify).
 
-Run from the project root (levels optional, default 4 5 6):
-    python Classifier/make_dataset.py 4 5 6
+Run from the project root (levels optional, default 2 3 4 5 6):
+    python Classifier/make_dataset.py 2 3 4 5 6
 
 Saves Classifier/data/level<L>.npz with, for train and val:
   x_*      (n, 80) windows          y_*       label 0-5
@@ -43,8 +43,10 @@ OUT_DIR = "Classifier/data"
 
 # level: (model builder, weights, threshold, train signals, val signals)
 # thresholds: Big_model/threshold_levels.py (level 6) and
-#             Pos_weight/data/fresh_noise/summary.npz (levels 4, 5), 20-signal averages
+#             Pos_weight/data/fresh_noise/summary.npz (levels 2-5), 20-signal averages
 DETECTORS = {
+    2: (small.make_model, "Pos_weight/data/1-20/level2_pw5.pt", 0.618, 10, 5),
+    3: (small.make_model, "Pos_weight/data/1-20/level3_pw5.pt", 0.639, 10, 5),
     4: (small.make_model, "Pos_weight/data/1-20/level4_pw5.pt", 0.620, 10, 5),
     5: (small.make_model, "Pos_weight/data/1-20/level5_pw5.pt", 0.569, 15, 5),
     6: (train_big.make_model, "Big_model/best.pt", 0.600, 20, 5),
@@ -85,7 +87,7 @@ def build(level, n_signals, part, model, threshold, d, index, cls):
 
 
 def main():
-    levels = [int(a) for a in sys.argv[1:]] or [4, 5, 6]
+    levels = [int(a) for a in sys.argv[1:]] or [2, 3, 4, 5, 6]
     os.makedirs(OUT_DIR, exist_ok=True)
     data = np.load("Data/D1_train.npz")
     d, index, cls = data["d"], data["Index"], data["Class"]

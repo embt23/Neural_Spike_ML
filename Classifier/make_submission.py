@@ -1,12 +1,12 @@
-"""Predict Index and Class for D4, D5, D6 and save them as .mat files.
+"""Predict Index and Class for D2 to D6 and save them as .mat files.
 
 For each dataset: run that level's detector + peak picking (settings from
 make_dataset.py), cut the 80-sample window around every detection, classify
 it with Classifier/level<L>.pt, drop the ones called "fail" (0), and save
 Index (1-based, sorted) and Class like D1.mat stores them (no d).
 
-Run from the project root (datasets optional, default 4 5 6):
-    python Classifier/make_submission.py 4 5 6
+Run from the project root (datasets optional, default 2 3 4 5 6):
+    python Classifier/make_submission.py 2 3 4 5 6
 
 Saves Submissions/<today>/D<n>.mat.
 """
@@ -49,7 +49,7 @@ def predict_dataset(n):
 
 
 def main():
-    datasets = [int(a) for a in sys.argv[1:]] or [4, 5, 6]
+    datasets = [int(a) for a in sys.argv[1:]] or [2, 3, 4, 5, 6]
     os.makedirs(OUT_DIR, exist_ok=True)
     for n in datasets:
         index, cls = predict_dataset(n)
