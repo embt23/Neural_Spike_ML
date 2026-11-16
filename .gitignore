@@ -4,3 +4,5 @@ CLAUDE.md
 Pos_weight/data/
 Big_model/data/
 Filter/data/
+Denoise/data/
+Detect_shapes/data/
