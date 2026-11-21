@@ -16,7 +16,7 @@ import numpy as np
 import torch
 from torch import nn
 
-sys.path.insert(0, "Other")
+sys.path.insert(0, "Modular")
 from generate_noise import generate_noise  # noqa: E402
 
 # ---- settings -------------------------------------------------------------

@@ -8,7 +8,7 @@ Usage from another script (run from the project root):
 import numpy as np
 
 
-def pick_peaks(outputs, width=9, point=None, threshold=0.5):
+def pick_peaks(outputs, width=9, point=None, threshold=0.5, return_scores=False):
     """Greedy peak picking.
 
     outputs:   1D array, the detector's score (0 to 1) for each window start.
@@ -16,10 +16,16 @@ def pick_peaks(outputs, width=9, point=None, threshold=0.5):
     point:     which position in the group becomes the guess, counted from 1
                (e.g. 5 = the middle of 9). Default: the middle.
     threshold: stop when no group's average score is above this (0 to 1).
+    return_scores: if True, also return each guess's group average score.
 
     Repeats: find the group of `width` adjacent scores with the biggest sum,
     put a guess at its `point`, set those scores to 0, then go again.
-    Returns the guesses as a sorted array of 0-based positions in `outputs`.
+    Returns the guesses as a sorted array of 0-based positions in `outputs`
+    (and, if return_scores, their scores in the same order).
+
+    The guesses come out from highest score to lowest, so running once with
+    threshold=0 and keeping the scores above t gives the same guesses as
+    running with threshold=t.
     """
     if point is None:
         point = (width + 1) // 2
@@ -31,12 +37,13 @@ def pick_peaks(outputs, width=9, point=None, threshold=0.5):
     sums = np.convolve(scores, kernel, mode="valid")  # sums[i] = scores[i:i+width].sum()
     limit = threshold * width                         # average > threshold  <=>  sum > limit
 
-    guesses = []
+    guesses, peak_scores = [], []
     while True:
         i = int(np.argmax(sums))           # start of the best group
         if sums[i] <= limit:
             break
         guesses.append(i + point - 1)
+        peak_scores.append(sums[i] / width)
 
         scores[i:i + width] = 0            # remove the group's scores
 
@@ -45,4 +52,8 @@ def pick_peaks(outputs, width=9, point=None, threshold=0.5):
         hi = min(len(sums), i + width)
         sums[lo:hi] = np.convolve(scores[lo:hi + width - 1], kernel, mode="valid")
 
-    return np.sort(np.array(guesses, dtype=np.int64))
+    guesses = np.array(guesses, dtype=np.int64)
+    order = np.argsort(guesses)
+    if return_scores:
+        return guesses[order], np.array(peak_scores)[order]
+    return guesses[order]

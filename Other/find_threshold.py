@@ -39,17 +39,14 @@ COLOURS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4"]
 LEVEL_COLOURS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300"]
 
 
-def find_threshold(data, step=STEP, width=WIDTH, tolerance=TOLERANCE):
-    """data: path to one results .npz file (uses its last saved epoch).
+def sweep(outputs, real, step=STEP, width=WIDTH, tolerance=TOLERANCE):
+    """outputs: one output vector. real: the real spike positions.
 
     Picks every peak once (threshold 0), then for each threshold keeps the
     peaks whose score is above it and scores those guesses.
     Returns a dict with the threshold values, F, precision, recall and the best.
     """
-    r = np.load(data)
-    guesses, scores = pick_peaks(r["outputs"][-1], width=width,
-                                 threshold=0, return_scores=True)
-    real = r["val_index"]
+    guesses, scores = pick_peaks(outputs, width=width, threshold=0, return_scores=True)
 
     thresholds = np.round(np.arange(0, 1 + step / 2, step), 6)
     f, precision, recall = (np.zeros(len(thresholds)) for _ in range(3))
@@ -59,9 +56,16 @@ def find_threshold(data, step=STEP, width=WIDTH, tolerance=TOLERANCE):
 
     best = int(np.argmax(f))
     return {"thresholds": thresholds, "f": f, "precision": precision,
-            "recall": recall, "best_threshold": thresholds[best],
-            "best_f": f[best], "level": int(r["level"]),
-            "pos_weight": int(r["pos_weight"]), "epoch": int(r["epochs"][-1])}
+            "recall": recall, "best_threshold": thresholds[best], "best_f": f[best]}
+
+
+def find_threshold(data, step=STEP, width=WIDTH, tolerance=TOLERANCE):
+    """data: path to one results .npz file (uses its last saved epoch)."""
+    r = np.load(data)
+    res = sweep(r["outputs"][-1], r["val_index"], step, width, tolerance)
+    res.update(level=int(r["level"]), pos_weight=int(r["pos_weight"]),
+               epoch=int(r["epochs"][-1]))
+    return res
 
 
 def show_level(results, title, by="pos_weight"):

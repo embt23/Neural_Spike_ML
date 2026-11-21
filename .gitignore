@@ -7,3 +7,5 @@ Filter/data/
 Denoise/data/
 Detect_shapes/data/
 Classifier/data/
+Class3/data/
+1detector-per-class/data/
