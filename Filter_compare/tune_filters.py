@@ -38,18 +38,26 @@ GAP_BEFORE, GAP_AFTER = 50, 120   # samples near a spike that don't count as noi
 CLASSES = (1, 2, 3, 4, 5)
 OUT_DIR = "Filter_compare/data"
 
-# 9 settings per filter: (name, function that filters a signal)
+# 18 settings per filter (two rounds of 9): (name, function that filters a signal)
+# Round 2 moves past the edge of round 1 (band-pass and Wiener both won on an
+# edge); wavelet also gets 9 more so every filter has the same budget.
 SETTINGS = {
     "none": [("unfiltered", lambda x: x)],
     "bandpass": [(f"low {lo}, high {hi}, order 3",
                   lambda x, lo=lo, hi=hi: bandpass(x, lo, hi, order=3))
-                 for lo in (100, 300, 500) for hi in (2000, 3000, 5000)],
+                 for lo, his in (((100, 300, 500), (2000, 3000, 5000)),     # round 1
+                                 ((20, 50, 100), (1000, 1500, 2000)))       # round 2
+                 for lo in lo for hi in his],
     "wiener": [(f"strength {s:.2f}", lambda x, s=s: wiener(x, LEVEL, strength=s))
-               for s in np.geomspace(0.25, 4, 9)],
-    "wavelet": [(f"{w}, 5 levels, {rule} {mode}",
-                 lambda x, w=w, rule=rule, mode=mode: wavelet_denoise(x, w, 5, rule, mode))
+               for s in np.concatenate([np.geomspace(0.25, 4, 9),           # round 1
+                                        np.geomspace(5.66, 64, 9)])],       # round 2
+    "wavelet": [(f"{w}, {n} levels, {rule} {mode}",
+                 lambda x, w=w, n=n, rule=rule, mode=mode: wavelet_denoise(x, w, n, rule, mode))
                 for w in ("db4", "sym4", "sym8")
-                for rule, mode in (("universal", "soft"), ("universal", "hard"), ("bayes", "soft"))],
+                for n, rule, mode in ((5, "universal", "soft"), (5, "universal", "hard"),
+                                      (5, "bayes", "soft"),                  # round 1
+                                      (3, "bayes", "soft"), (4, "bayes", "soft"),
+                                      (6, "bayes", "soft"))],                # round 2
 }
 
 
