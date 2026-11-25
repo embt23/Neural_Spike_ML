@@ -25,7 +25,7 @@ of the spike's energy). Past that point the extra poles only fit noise.
 
 Run from the project root:
     python Other/prony_fit.py
-Saves Prony_Order.png, Prony_Fit.png and prony.json in
+Saves Prony_Order.png, Prony_Fit.png, Prony_S_Plane.png and prony.json in
 Artifacts/Composate{based on class}/.
 """
 import json
@@ -103,9 +103,12 @@ def main():
               for c in spikes}
 
     # --- print and save the chosen model of each class ---
-    results = {}
+    results, s_poles = {}, {}
     for c, x in spikes.items():
         z, h, fit = prony(x, chosen[c])
+        # Laplace poles: s = FS * ln(z). Start corrections (gone within one
+        # sample, |z| < 1/e) are left out: they aren't part of the shape.
+        s_poles[c] = FS * np.log(z[abs(z) >= np.exp(-1)].astype(complex))
         poles = describe(z, h)
         results[c] = {"order": chosen[c], "explained": round(scores[c][chosen[c] - 1], 4),
                       "explained_by_order": [round(s, 4) for s in scores[c]], "poles": poles}
@@ -149,7 +152,34 @@ def main():
     fig.tight_layout()
     fig.savefig(os.path.join(OUT_DIR, "Prony_Fit.png"), dpi=120)
     plt.close(fig)
-    print(f"\nSaved Prony_Order.png, Prony_Fit.png and prony.json in {OUT_DIR}")
+    # --- chart 3: the s-plane, one dot per pole ---
+    # x = sigma (real part): how fast it decays, further left = faster.
+    # y = omega (imaginary part): how fast it oscillates. Mirror pairs show
+    # as two dots, one above and one below the x-axis.
+    fig, ax = plt.subplots(figsize=(8, 6))
+    for c, sk in s_poles.items():
+        ax.scatter(sk.real, sk.imag, s=70, color=COLOURS[c], zorder=3, label=f"Class {c}")
+        top = sk[sk.imag.argmax()]
+        offset = (-16, -18) if c == 4 else (8, 6)   # 4 sits right under 5: label it below
+        ax.annotate(f"{c}", (top.real, top.imag), xytext=offset,
+                    textcoords="offset points", color=COLOURS[c], fontweight="bold")
+    ax.axhline(0, color="#999999", linewidth=1)
+    ax.axvline(0, color="#999999", linewidth=1)
+    left = 1.15 * min(sk.real.min() for sk in s_poles.values())
+    ax.set_xlim(left, -0.08 * left)
+    ax.set_xlabel("σ, real part (1/s): decay, further left = dies out faster")
+    ax.set_ylabel("ω, imaginary part (rad/s): oscillation")
+    hz = ax.secondary_yaxis("right", functions=(lambda w: w / (2 * np.pi),
+                                                lambda f: f * 2 * np.pi))
+    hz.set_ylabel("Frequency (Hz)")
+    ax.set_title("Laplace poles of each class's average spike (s-plane)")
+    ax.grid(color="#e6e6e6", linewidth=0.8)
+    ax.spines[["top"]].set_visible(False)
+    ax.legend(frameon=False, loc="lower left")
+    fig.tight_layout()
+    fig.savefig(os.path.join(OUT_DIR, "Prony_S_Plane.png"), dpi=120)
+    plt.close(fig)
+    print(f"\nSaved Prony_Order.png, Prony_Fit.png, Prony_S_Plane.png and prony.json in {OUT_DIR}")
 
 
 if __name__ == "__main__":
