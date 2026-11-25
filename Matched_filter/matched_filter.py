@@ -84,11 +84,11 @@ def templates():
     return np.stack(rows)
 
 
-def noise_covariance(level):
+def noise_covariance(level, seed=NOISE_SEED):
     """Covariance of (PRE + POST)-sample windows of pure noise: D1_train[:SPLIT]
     plus generated level noise, at random spots with no spike nearby."""
     d, index, _ = training_data()
-    x = d + generate_noise(level, len(d), seed=NOISE_SEED)
+    x = d + generate_noise(level, len(d), seed=seed)
     rng = np.random.default_rng(0)
     starts = rng.integers(PRE, len(x) - POST, size=20 * N_NOISE)   # extra, most get dropped
     lo = np.searchsorted(index, starts - PRE - GAP_AFTER)
