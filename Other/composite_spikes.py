@@ -20,7 +20,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 FS = 25000                      # sampling frequency in Hz
-BEFORE, AFTER = 50, 100         # same window as Other/visualize.py show_spike
+BEFORE, AFTER = 50, 200         # 2 ms before the spike start, 8 ms after
 OUT_DIR = "Artifacts/Composate{based on class}"
 COLOURS = {1: "#257de0", 2: "#f47230", 3: "#00b894", 4: "#f2a600", 5: "#ee7fac"}
 

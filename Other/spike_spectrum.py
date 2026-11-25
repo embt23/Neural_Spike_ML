@@ -1,11 +1,11 @@
 """Fourier analysis of each class's average spike (training data only).
 
-The average spike (see composite_spikes.py) is cut to 0 to 4 ms after the
-spike start (100 samples). Its baseline (the mean of the 2 ms before the
+The average spike (see composite_spikes.py) is cut to START_MS to END_MS (0 to 8 ms) after the
+spike start (200 samples). Its baseline (the mean of the 2 ms before the
 start) is subtracted, so the flat offset doesn't show up as a 0 Hz spike in
 the spectrum. Then the FFT gives how much of each frequency the shape contains.
 
-100 samples at 25 kHz only gives one point every 250 Hz, so the window is
+200 samples at 25 kHz only gives one point every 125 Hz, so the window is
 zero-padded to N_FFT samples. That draws a smoother curve between those points;
 it doesn't add any new detail.
 
@@ -25,7 +25,7 @@ sys.path.insert(0, "Modular")
 from composite_spikes import spike_windows, BEFORE, AFTER, FS, OUT_DIR, COLOURS   # noqa: E402
 from generate_noise import generate_noise                                    # noqa: E402
 
-START_MS, END_MS = 0, 4          # part of the spike to analyse
+START_MS, END_MS = 0, 8          # part of the spike to analyse
 N_FFT = 2000                     # zero-padded length (12.5 Hz between points)
 SHOW_HZ = 5000                   # x-axis limit of the plots
 N_NOISE = 2000                   # noise windows averaged per level
@@ -34,7 +34,7 @@ GAP_BEFORE, GAP_AFTER = 50, 120  # samples near a spike that don't count as nois
 
 
 def spectrum(mean):
-    """Frequencies (Hz) and amplitude of the FFT of the 0-4 ms part of `mean`."""
+    """Frequencies (Hz) and amplitude of the FFT of the START_MS to END_MS part of `mean`."""
     baseline = mean[:BEFORE].mean()
     a = BEFORE + int(START_MS * FS / 1000)
     b = BEFORE + int(END_MS * FS / 1000)
@@ -91,7 +91,7 @@ def show_noise_levels(d, index, spectra, ylim):
         ax.label_outer()
 
     axes.flat[0].legend(frameon=False, loc="upper right")
-    fig.suptitle("Average spike vs noise, by frequency (0 to 4 ms windows)")
+    fig.suptitle(f"Average spike vs noise, by frequency ({START_MS} to {END_MS} ms windows)")
     fig.tight_layout()
     fig.savefig(os.path.join(OUT_DIR, "Noise_Levels_Spectrum.png"), dpi=120)
     plt.close(fig)
@@ -124,7 +124,7 @@ def main():
         ax.annotate(f"90% of energy below {f90:.0f} Hz", (f90, ylim[1] * 0.9),
                     xytext=(6, 0), textcoords="offset points", color="#555555")
         style(ax, ylim)
-        ax.set_title(f"Class {c}: spectrum of the average spike (0 to 4 ms)")
+        ax.set_title(f"Class {c}: spectrum of the average spike ({START_MS} to {END_MS} ms)")
         fig.tight_layout()
         fig.savefig(os.path.join(OUT_DIR, f"Class{c}", "Spectrum.png"), dpi=120)
         plt.close(fig)
@@ -133,7 +133,7 @@ def main():
     for c, (freqs, amp) in spectra.items():
         ax.plot(freqs, amp, color=COLOURS[c], linewidth=2, label=f"Class {c}")
     style(ax, ylim)
-    ax.set_title("Spectrum of each class's average spike (0 to 4 ms)")
+    ax.set_title(f"Spectrum of each class's average spike ({START_MS} to {END_MS} ms)")
     ax.legend(frameon=False, loc="upper right")
     fig.tight_layout()
     fig.savefig(os.path.join(OUT_DIR, "All_Classes_Spectrum.png"), dpi=120)
