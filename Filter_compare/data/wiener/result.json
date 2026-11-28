@@ -1,0 +1,28 @@
+{
+ "competitor": "wiener",
+ "level": 6,
+ "threshold": 0.6,
+ "threshold_detect_f": 0.780536278027828,
+ "classifier_examples": 27314,
+ "detector_minutes": 8.5,
+ "total_minutes": 9.5,
+ "f_total": {
+  "mean": 0.5429877495743087,
+  "std": 0.020716442458771557
+ },
+ "f_detect": {
+  "mean": 0.7674547977581156,
+  "std": 0.014589794124316753
+ },
+ "f_class": {
+  "mean": 0.4467875860669629,
+  "std": 0.02666097553616246
+ },
+ "f_per_class": [
+  0.576,
+  0.67,
+  0.0,
+  0.38,
+  0.652
+ ]
+}

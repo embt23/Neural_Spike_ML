@@ -1,0 +1,28 @@
+{
+ "competitor": "unfiltered",
+ "level": 6,
+ "threshold": 0.64,
+ "threshold_detect_f": 0.6294024967225882,
+ "classifier_examples": 38667,
+ "detector_minutes": 7.6,
+ "total_minutes": 8.8,
+ "f_total": {
+  "mean": 0.40844446766045284,
+  "std": 0.017786276307221335
+ },
+ "f_detect": {
+  "mean": 0.64542475688519,
+  "std": 0.029936357330567247
+ },
+ "f_class": {
+  "mean": 0.306881486564137,
+  "std": 0.013967962166936859
+ },
+ "f_per_class": [
+  0.481,
+  0.555,
+  0.0,
+  0.088,
+  0.441
+ ]
+}

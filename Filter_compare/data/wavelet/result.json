@@ -1,0 +1,28 @@
+{
+ "competitor": "wavelet",
+ "level": 6,
+ "threshold": 0.59,
+ "threshold_detect_f": 0.6701489844514095,
+ "classifier_examples": 31178,
+ "detector_minutes": 8.6,
+ "total_minutes": 9.8,
+ "f_total": {
+  "mean": 0.4611772350907282,
+  "std": 0.023039586204061265
+ },
+ "f_detect": {
+  "mean": 0.6957240077655239,
+  "std": 0.02555409341813336
+ },
+ "f_class": {
+  "mean": 0.36065718965867305,
+  "std": 0.02261956041681383
+ },
+ "f_per_class": [
+  0.553,
+  0.631,
+  0.0,
+  0.152,
+  0.503
+ ]
+}

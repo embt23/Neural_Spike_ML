@@ -1,0 +1,28 @@
+{
+ "competitor": "bandpass",
+ "level": 6,
+ "threshold": 0.68,
+ "threshold_detect_f": 0.7442978306659459,
+ "classifier_examples": 24978,
+ "detector_minutes": 8.3,
+ "total_minutes": 9.4,
+ "f_total": {
+  "mean": 0.49645465416026735,
+  "std": 0.02773782655092308
+ },
+ "f_detect": {
+  "mean": 0.7425503222084633,
+  "std": 0.009213132338976172
+ },
+ "f_class": {
+  "mean": 0.3909850821396118,
+  "std": 0.03648470376011368
+ },
+ "f_per_class": [
+  0.58,
+  0.632,
+  0.0,
+  0.209,
+  0.568
+ ]
+}
